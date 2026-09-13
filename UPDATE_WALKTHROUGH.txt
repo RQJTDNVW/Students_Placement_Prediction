@@ -1,0 +1,165 @@
+================================================================================
+STUDENT PLACEMENT INTELLIGENCE — SYSTEM UPDATE WALKTHROUGH
+================================================================================
+Document: Update & Architecture Walkthrough
+Date: September 2026
+Project: Student Placement Prediction & Career Readiness Intelligence
+Repository Root: C:\AI\Student Placement Prediction
+================================================================================
+
+--------------------------------------------------------------------------------
+1. EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+The Student Placement Prediction system has been upgraded from an offline
+prototype with disconnected mock data into an integrated, explainable,
+multi-stage machine learning system.
+
+Key Highlights of this Update:
+1. Production REST API: Built with FastAPI in `app.py`, running on port 5000
+   with full CORS support for the React frontend.
+2. Dedicated Tech-Placement Model (V4): Reclaimed high-value domain features
+   (coding_skills, dsa_score, backlogs, college_tier, branch, hackathons,
+   open_source_contributions) to reflect actual technical hiring criteria.
+3. Multi-Stage Salary Regressor (LPA): Predicts expected salary packages and
+   salary confidence brackets for placed candidates (R^2 = 0.7880, MAE = 0.95 LPA).
+4. Native TreeSHAP Explainability: Real-time calculation of individual feature
+   attributions (top positive drivers & primary risk factors) directly inside
+   the XGBoost C++ core with zero external C++ build dependencies.
+5. Frontend Integration: Full React 18 + TypeScript + Vite UI connection,
+   including salary badges, SHAP explanation cards, and an expandable
+   technical profile section in the prediction form.
+
+
+--------------------------------------------------------------------------------
+2. DETAILED BREAKDOWN OF NEW COMPONENTS
+--------------------------------------------------------------------------------
+
+A. DEDICATED TECH-PLACEMENT & SALARY PIPELINE (`model_training_tech_v4.py`)
+   - Replaced generic data-merging trade-offs with a model trained on the
+     complete 100,000-row synthetic dataset.
+   - Engineered domain features:
+     * tech_score: Average of coding, DSA, system design, and ML knowledge.
+     * experience_score: Weighted exposure across internships, projects,
+       hackathons, and open source.
+     * skill_score: Balanced score of aptitude, communication, and extracurriculars.
+   - Stage 1: XGBoost Classification Model (Placement Status & Probability).
+   - Stage 2: XGBoost Regression Model for placed candidates (Salary in LPA).
+   - Serialized artifacts saved to `trained_models_v4/`:
+     * tech_preprocessor_v4.joblib
+     * best_tech_model_xgboost_v4.joblib
+     * salary_regressor_v4.joblib
+     * feature_names_v4.json
+     * tech_model_metrics_v4.json
+
+B. FASTAPI PRODUCTION REST API (`app.py`)
+   - High-throughput asynchronous backend designed to serve the React frontend:
+     * POST /predict             : Unified inference endpoint with TreeSHAP and salary.
+     * GET  /predictions         : Returns persistent prediction history.
+     * POST /predictions         : Saves prediction records into `prediction_history.json`.
+     * DELETE /predictions/{id}  : Removes a saved prediction record.
+     * GET  /dashboard/statistics: Live metrics, risk levels, and probability distribution.
+     * GET  /model/metrics       : Offline evaluation comparison across 7 algorithms.
+     * GET  /analytics           : Demographic breakdowns by CGPA, projects, internships.
+     * GET  /health              : Service health and model readiness check.
+     * GET  /docs                : Interactive Swagger API documentation.
+   - Supports both the standard 7-field input (with intelligent defaults) and
+     extended technical fields.
+
+C. NATIVE TREESHAP EXPLAINABILITY ENGINE
+   - Implemented using XGBoost's native `pred_contribs=True` algorithm.
+   - For every student prediction, computes exact log-odds attributions:
+     * Top Positive Drivers (e.g. "Applied Experience Index (+0.64 impact)",
+       "Hands-on Coding Proficiency (+0.30 impact)").
+     * Primary Risk Factors (e.g. "Active Backlogs (-0.42 impact)",
+       "Low DSA Score").
+   - Gives students transparent, actionable feedback on WHY the model made its decision.
+
+D. FRONTEND UI & TYPESCRIPT UPGRADES
+   - `frontend/src/types/prediction.ts`: Expanded types with salary and SHAP definitions.
+   - `frontend/src/components/prediction/PredictionResultCard.tsx`: Added an
+     Estimated Salary badge showing predicted LPA and range (e.g., "21.4 LPA (Bracket: 20.4 - 22.4 LPA)").
+   - `frontend/src/components/prediction/ImprovementGuidance.tsx`: Added a dedicated
+     Explainable AI (TreeSHAP) card displaying positive drivers and risk flags.
+   - `frontend/src/components/prediction/StudentPredictionForm.tsx`: Added an
+     optional collapsible "Technical & Domain Profile (Advanced V4 Model)" section.
+   - `frontend/src/utils/validation.ts`: Updated Zod schema with optional tech fields.
+
+
+--------------------------------------------------------------------------------
+3. MODEL PERFORMANCE METRICS
+--------------------------------------------------------------------------------
+
+STAGE 1: PLACEMENT CLASSIFIER (XGBOOST V4)
+  * Test Accuracy:       69.69%
+  * F1-Score:            80.69%
+  * Recall:              92.49% (High sensitivity to protect unplaced students)
+  * Precision:           71.56%
+  * ROC-AUC:             0.6822
+  * PR-AUC:              0.8154
+
+STAGE 2: SALARY REGRESSOR (XGBOOST V4)
+  * R^2 Score:           0.7880 (Explains ~79% of salary variance)
+  * Mean Absolute Error: 0.95 LPA (Accurate to within ~0.95 Lakhs)
+  * Root Mean Sq Error:  1.19 LPA
+  * Mean Actual Salary:  17.33 LPA
+
+
+--------------------------------------------------------------------------------
+4. VERIFICATION & TEST RESULTS
+--------------------------------------------------------------------------------
+
+A. Automated Test Suite (`test_api.py`):
+   =============================================================================
+   [PASS] 1. Health check passed (all V4 models loaded).
+   [PASS] 2. Standard 7-feature predict passed: Placed (95.8%), Salary: 21.43 LPA.
+   [PASS] 3. High-risk tech predict passed: Not Placed (18.4%), Top Risk flagged.
+   [PASS] 4. Model metrics endpoint passed.
+   [PASS] 5. Dashboard statistics passed.
+   [PASS] 6. Analytics endpoint passed.
+   [PASS] 7. Save prediction passed.
+   [PASS] 8. Delete prediction passed.
+   =============================================================================
+   Result: ALL 8 TEST SUITES COMPLETED SUCCESSFULLY.
+
+B. Frontend Production Build (`npm run build`):
+   =============================================================================
+   - Transformed 2,927 modules.
+   - Output files generated in `/dist`.
+   - TypeScript compilation: 0 errors.
+   =============================================================================
+
+
+--------------------------------------------------------------------------------
+5. HOW TO RUN THE PROJECT
+--------------------------------------------------------------------------------
+
+STEP 1: Start the FastAPI Backend
+Open a terminal in the project directory:
+   cd "C:\AI\Student Placement Prediction"
+   python -m uvicorn app:app --host 127.0.0.1 --port 5000 --reload
+
+The API will be live at:
+   - Base URL: http://127.0.0.1:5000
+   - Interactive Docs: http://127.0.0.1:5000/docs
+   - Health Check: http://127.0.0.1:5000/health
+
+STEP 2: Start the React Frontend
+Open a second terminal:
+   cd "C:\AI\Student Placement Prediction\frontend"
+   npm run dev
+
+The web app will open at:
+   - http://localhost:5173
+
+STEP 3: Connect Frontend to Live API
+1. Open http://localhost:5173 in your browser.
+2. Click on "Settings" in the navigation bar.
+3. In "Data mode", switch from "Demo mode" to "Production API".
+4. Ensure the API Base URL is: http://127.0.0.1:5000
+5. Navigate to "Predict student", enter student details, and click "Predict placement".
+6. View the Placement Probability, Estimated Salary Package (LPA), and real-time
+   TreeSHAP positive and negative feature influences!
+
+================================================================================
+END OF WALKTHROUGH
+================================================================================

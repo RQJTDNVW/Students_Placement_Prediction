@@ -1,0 +1,119 @@
+[
+  {
+    "prediction_id": "PR-B2B9A5",
+    "timestamp": "2026-09-10T16:33:36.597639+00:00",
+    "saved": true,
+    "cgpa": 7.5,
+    "aptitude_score": 70.0,
+    "internships": 1,
+    "projects_count": 2,
+    "certifications": 1,
+    "communication_skills": 6.0,
+    "extracurricular_activities": 5.0,
+    "status": "Placed",
+    "prediction": 1,
+    "probability": 0.7563,
+    "risk_level": "Low Risk",
+    "experience_score": 6.0,
+    "skill_score": 6.0,
+    "model_name": "XGBoost Technical Classifier",
+    "model_version": "V4",
+    "expected_salary_lpa": 17.55,
+    "salary_range": "16.6 - 18.6 LPA",
+    "top_positive_factors": [
+      "Tier-3 Institution Standing (+0.22 log-odds impact)",
+      "Branch Cse (+0.14 log-odds impact)",
+      "Versatility & Communication Index (+0.12 log-odds impact)"
+    ],
+    "top_negative_factors": [
+      "Applied Experience Index (-0.11 log-odds impact)",
+      "Tier-1 Institution Network (-0.09 log-odds impact)",
+      "Technical Certifications (-0.06 log-odds impact)"
+    ]
+  },
+  {
+    "prediction_id": "PR-1042",
+    "cgpa": 8.6,
+    "internships": 2,
+    "projects_count": 4,
+    "certifications": 3,
+    "aptitude_score": 84.0,
+    "communication_skills": 8.0,
+    "extracurricular_activities": 7.0,
+    "status": "Placed",
+    "prediction": 1,
+    "probability": 0.91,
+    "risk_level": "Low Risk",
+    "experience_score": 8.2,
+    "skill_score": 8.1,
+    "timestamp": "2026-09-10T14:23:22.532428+00:00",
+    "saved": true,
+    "model_name": "XGBoost Tech",
+    "model_version": "V4",
+    "expected_salary_lpa": 19.2,
+    "salary_range": "18.2 \u2013 20.2 LPA",
+    "top_positive_factors": [
+      "High CGPA (8.6)",
+      "2 Internships Completed",
+      "Strong Aptitude (84)"
+    ],
+    "top_negative_factors": []
+  },
+  {
+    "prediction_id": "PR-1041",
+    "cgpa": 7.4,
+    "internships": 1,
+    "projects_count": 2,
+    "certifications": 1,
+    "aptitude_score": 68.0,
+    "communication_skills": 6.0,
+    "extracurricular_activities": 5.0,
+    "status": "Placed",
+    "prediction": 1,
+    "probability": 0.72,
+    "risk_level": "Moderate Risk",
+    "experience_score": 5.4,
+    "skill_score": 6.1,
+    "timestamp": "2026-09-10T14:23:22.532428+00:00",
+    "saved": true,
+    "model_name": "XGBoost Tech",
+    "model_version": "V4",
+    "expected_salary_lpa": 16.5,
+    "salary_range": "15.5 \u2013 17.5 LPA",
+    "top_positive_factors": [
+      "Solid CGPA (7.4)",
+      "Relevant Project Work"
+    ],
+    "top_negative_factors": [
+      "Moderate Aptitude Score"
+    ]
+  },
+  {
+    "prediction_id": "PR-1040",
+    "cgpa": 6.2,
+    "internships": 0,
+    "projects_count": 1,
+    "certifications": 0,
+    "aptitude_score": 52.0,
+    "communication_skills": 4.0,
+    "extracurricular_activities": 2.0,
+    "status": "Not Placed",
+    "prediction": 0,
+    "probability": 0.31,
+    "risk_level": "High Risk",
+    "experience_score": 2.1,
+    "skill_score": 3.8,
+    "timestamp": "2026-09-10T14:23:22.532428+00:00",
+    "saved": true,
+    "model_name": "XGBoost Tech",
+    "model_version": "V4",
+    "expected_salary_lpa": null,
+    "salary_range": null,
+    "top_positive_factors": [],
+    "top_negative_factors": [
+      "Zero Internships",
+      "Low Aptitude (52)",
+      "Limited Projects"
+    ]
+  }
+]
