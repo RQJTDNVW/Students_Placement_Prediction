@@ -1,0 +1,14 @@
+import { useMemo, useState } from 'react'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import type { ModelComparisonRow, ModelMetric } from '../../types/model.ts'
+import { formatMetric } from '../../utils/format.ts'
+
+const metrics: Array<{ key: ModelMetric; label: string; description: string }> = [{ key: 'accuracy', label: 'Accuracy', description: 'Share of correct classifications.' }, { key: 'f1_score', label: 'F1-score', description: 'Balance between precision and recall.' }, { key: 'roc_auc', label: 'ROC-AUC', description: 'Ranking quality across thresholds.' }, { key: 'pr_auc', label: 'PR-AUC', description: 'Precision-recall performance.' }, { key: 'training_time', label: 'Training time', description: 'Offline training duration in seconds.' }]
+
+export function ModelComparisonChart({ data }: { data: ModelComparisonRow[] }) {
+  const [metric, setMetric] = useState<ModelMetric>('roc_auc')
+  const selected = metrics.find((item) => item.key === metric)!
+  const chartData = useMemo(() => data.map((row) => ({ model: row.model, value: row[metric] })).sort((a, b) => b.value - a.value), [data, metric])
+  const max = metric === 'training_time' ? Math.max(...data.map((row) => row.training_time)) * 1.1 : 1
+  return <section className="panel p-4 sm:p-5"><div className="flex flex-wrap items-start justify-between gap-4"><div><p className="eyebrow mb-2">Offline comparison</p><h2 className="text-lg font-semibold text-ink">Model comparison</h2><p className="mt-1 text-sm leading-6 text-muted">{selected.description} Selecting a metric re-ranks the candidates.</p></div><div className="flex flex-wrap gap-1 border border-line bg-recessed p-1">{metrics.map((item) => <button key={item.key} type="button" onClick={() => setMetric(item.key)} className={`min-h-8 px-2.5 text-[11px] font-semibold ${metric === item.key ? 'bg-cyan text-page' : 'text-muted hover:text-ink'}`}>{item.label}</button>)}</div></div><div className="mt-6 h-[360px]"><ResponsiveContainer width="100%" height="100%"><BarChart data={chartData} layout="vertical" margin={{ top: 4, right: 22, left: 12, bottom: 0 }}><CartesianGrid horizontal={false} stroke="var(--line)" strokeDasharray="2 5" /><XAxis type="number" domain={[0, max]} tickFormatter={(value) => metric === 'training_time' ? `${value}s` : `${Math.round(value * 100)}%`} tick={{ fill: 'var(--meta)', fontSize: 10 }} tickLine={false} axisLine={false} /><YAxis type="category" dataKey="model" width={132} tick={{ fill: 'var(--muted)', fontSize: 10 }} tickLine={false} axisLine={false} /><Tooltip contentStyle={{ background: '#172b3e', border: '1px solid #294257', borderRadius: 7 }} formatter={(value) => [formatMetric(Number(value || 0), metric), selected.label]} /><Bar dataKey="value" fill="#45cff5" radius={[0, 3, 3, 0]} barSize={22} /></BarChart></ResponsiveContainer></div></section>
+}

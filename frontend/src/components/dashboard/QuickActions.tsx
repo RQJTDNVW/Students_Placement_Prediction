@@ -1,0 +1,5 @@
+import { ArrowRight, Gauge, History, UserRoundSearch } from 'lucide-react'
+import { Link } from 'react-router-dom'
+
+const actions = [{ label: 'Predict a student', description: 'Request a new estimate', to: '/predict', icon: UserRoundSearch }, { label: 'View history', description: 'Search saved predictions', to: '/history', icon: History }, { label: 'Model performance', description: 'Review offline evaluation', to: '/model-performance', icon: Gauge }]
+export function QuickActions() { return <div className="divide-y divide-line border-y border-line">{actions.map(({ label, description, to, icon: Icon }) => <Link key={to} to={to} className="group flex items-center gap-3 py-4"><span className="grid h-8 w-8 shrink-0 place-items-center border border-line text-cyan group-hover:border-cyan"><Icon aria-hidden="true" className="h-4 w-4" /></span><span className="min-w-0 flex-1"><span className="block text-sm font-semibold text-ink">{label}</span><span className="mt-1 block text-xs text-meta">{description}</span></span><ArrowRight aria-hidden="true" className="h-4 w-4 text-meta transition-transform group-hover:translate-x-1 group-hover:text-cyan" /></Link>)}</div> }
